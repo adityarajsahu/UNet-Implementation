@@ -1,9 +1,11 @@
+#!/usr/bin/env python
+
 import tensorflow as tf
 from tf.keras.layers import Conv2D, MaxPool2D, UpSampling2D, Concatenate
 
-class UnetModel:
+class MyModel(tf.keras.Model):
     def __init__(self):
-        super(UnetModel, self).__init__()
+        super(MyModel, self).__init__()
     
     # Convolution layer with 64 filters, 3 x 3 kernel, padding = True and Relu               activation function
         self.conv1 = Conv2D(filters=64, kernel_size=3, padding='same', activation='relu')
@@ -24,8 +26,7 @@ class UnetModel:
     # Pooling layer with kernel size = 2 x 2
         self.pool = MaxPool2D(pool_size=(2,2))
     
-    def forward(self, inputs, training=False):
-    
+    def call(self, inputs, training=False):
     # input is the input image to be processed
         conv1_layer = self.conv1(inputs)
         conv1_layer = self.conv1(conv1_layer)
