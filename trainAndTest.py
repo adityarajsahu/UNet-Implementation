@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from unet-model.UnetModel import forward
+from unet-model import MyModel
 from dataProcessor import processor
 from tf.keras.callbacks import ModelCheckpoint
 
@@ -23,8 +23,8 @@ assigned to a particular class -
 # Process the downloaded data according to requirement
 train, test = processor(dataset)
 
-# Create the model
-unet = unet-model.UnetModel()
+# create the model  
+unet = MyModel()
 
 # initialize the optimizer, losses and metrices
 unet.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001), loss=keras.losses.Binaryentropy(), metrics=[keras.metrics.SparseCategoricalAccuracy()])
