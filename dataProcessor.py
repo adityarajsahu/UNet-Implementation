@@ -4,22 +4,6 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 import cv2
 
-# Downloading Oxford - IIIT Pet dataset for image segmentation 
-dataset, info = tfds.load('oxford_iiit_pet:3.*.*', with_info=True)
-
-"""
-The Oxford-IIIT pet dataset is a 37 category pet image dataset with 
-roughly 200 images for each class.The images have large variations 
-in scale, pose and lighting. All images have an associated ground 
-truth annotation of breed.
-
-In this dataset, the output is also an image in which ever pixel is 
-assigned to a particular class -
-1. Pixel 1 - pixel inside the periphery of a pet body.
-2. Pixel 2 - pixel on the periphery of the pet body.
-3. Pixel 3 - pixel outisde the periphery of the pet body.
-"""
-
 def image_normalize(image, mask):
     # normalize each pixel in the image to bring them within
     # the range [0, 1]
