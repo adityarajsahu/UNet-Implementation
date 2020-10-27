@@ -32,9 +32,8 @@ prediction = model.predict(test_image)
 prediction = np.argmax(prediction, axis=-1)
 prediction = np.expand_dims(prediction, axis=-1)
 
-figure, axis = plt.subplots(nrows=3, ncols=3, figsize=(9,9))
-  
+figure, axis = plt.subplots(nrows=3, ncols=3, figsize=(9, 9))
 for i in range(3):
-  axs[i][0].imshow(test_image[i]);
-  axs[i][1].imshow(np.squeeze(test_mask[i],-1), cmap='gray')
-  axs[i][2].imshow(np.squeeze(prediction[i],-1), cmap='gray')
+    axis[i][0].imshow(test_image[i])
+    axis[i][1].imshow(np.squeeze(test_mask[i], -1), cmap='gray')
+    axis[i][2].imshow(np.squeeze(prediction[i], -1), cmap='gray')
