@@ -18,13 +18,13 @@ tf.keras.backend.clear_session()
 
 model = UnetModel()
 
-earlystopping = EarlyStopping(patience=5)
+earlystopping = EarlyStopping(patience=3)
 
 checkpoint_path = 'training_1/cp.ckpt'
 checkpoint_dir = os.path.dirname(checkpoint_path)
 callback = ModelCheckpoint(filepath=checkpoint_path, save_best_only=True)
 
-model.fit(trainData, epochs=20, validation_data=valData, callbacks=[earlystopping, callback])
+model.fit(trainData, epochs=10, validation_data=valData, callbacks=[earlystopping, callback])
 
 test_image, test_mask = next(iter(testData))
 
