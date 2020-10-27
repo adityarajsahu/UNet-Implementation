@@ -5,11 +5,13 @@ from sklearn.utils import shuffle
 import numpy as np
 import os
 
+
 def image_normalize(image, mask):
     input_image = tf.cast(image, tf.float32) / 255.0
     input_mask = tf.cast(mask, tf.float32) - 1.0
     
     return input_image, input_mask
+
 
 def image_modifier(img_file_path, mask_file_path):
     image = tf.io.read_file(img_file_path)
@@ -17,12 +19,13 @@ def image_modifier(img_file_path, mask_file_path):
     image = tf.image.resize(image, [128,128])
     
     mask = tf.io.read_file(mask_file_path)
-    mask = tf.io.decode_jpeg(mask, channels=3)
+    mask = tf.io.decode_jpeg(mask, channels=1)
     mask = tf.image.resize(mask, [128,128])
     
     image, mask = image_normalize(image, mask)
     
     return image, mask
+
 
 def processor(img_file_path, mask_file_path):
     image_path, mask_path = shuffle(img_file_path, mask_file_path, random_state=0)
