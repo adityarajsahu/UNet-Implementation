@@ -1,40 +1,44 @@
 #!/usr/bin/env python
 
 import tensorflow as tf
-import cv2
+from sklearn.utils import shuffle
 import numpy as np
+import os
 
 def image_normalize(image, mask):
-    # normalize each pixel in the image to bring them within
-    # the range [0, 1]
-    input_image = tf.constant(image, tf.uint8) / 255
-    
-    # initialize pixel value lies within the set {1, 2, 3}
-    # final pixel value lies within the set {0, 1, 2}
-    # scaling down the pixel values results in faster computation
-    input_mask = tf.constant(mask, tf.uint8) - 1
+    input_image = tf.cast(image, tf.float32) / 255.0
+    input_mask = tf.cast(mask, tf.float32) - 1.0
     
     return input_image, input_mask
 
-def image_modifier(datapoint):
-    # normalize the training images and their corresponding masks
-    image, mask = image_normalize(datapoint['image'], datapoint['segmentation_mask'])
+def image_modifier(img_file_path, mask_file_path):
+    image = tf.io.read_file(img_file_path)
+    image = tf.io.decode_jpeg(image, channels=3)
+    image = tf.image.resize(image, [128,128])
     
-    # convert the tensor into image for resizing
-    #image = tf.image.convert_image_dtype(image, dtype=tf.uint8, saturate=False)
-    #mask = tf.image.convert_image_dtype(mask, dtype=tf.uint8, saturate=False)
+    mask = tf.io.read_file(mask_file_path)
+    mask = tf.io.decode_jpeg(mask, channels=1)
+    mask = tf.image.resize(mask, [128,128])
     
-    # resize the images and masks to a particular size to avoid errors
-    # in case the size of the images are different
-    image = np.resize(image, (128, 128))
-    mask = np.resize(mask, (128, 128))
+    image, mask = image_normalize(image, mask)
+    
     return image, mask
 
-def processor(dataset):
+def processor(img_file_path, mask_file_path):
+    image_path, mask_path = shuffle(img_file_path, mask_file_path, random_state=0)
+    train_image, train_mask = image_path[:6000], mask_path[:6000]
+    val_image, val_mask = image_path[6000:7000], mask_path[6000:7000]
+    test_image, test_mask = image_path[7000:], mask_path[7000:]
     
-    # Process the training set to get required images and masks.
-    train = list(map(image_modifier, dataset['train']))
-    test = list(map(image_modifier, dataset['test']))
+    trainloader = tf.data.Dataset.from_tensor_slices((train_image, train_mask))
+    valloader = tf.data.Dataset.from_tensor_slices((val_image, val_mask))
+    testloader = tf.data.Dataset.from_tensor_slices((test_image, test_mask))
     
-    return train, test
+    trainloader = (trainloader.shuffle(32).map(image_modifier, num_parallel_calls=4).batch(8))
+    
+    valloader = (valloader.shuffle(32).map(image_modifier, num_parallel_calls=4).batch(8))
+    
+    testloader = (testloader.shuffle(32).map(image_modifier, num_parallel_calls=4).batch(8))
+    
+    return trainloader, valloader, testloader
 
