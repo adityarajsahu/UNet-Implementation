@@ -17,7 +17,7 @@ def image_modifier(img_file_path, mask_file_path):
     image = tf.image.resize(image, [128,128])
     
     mask = tf.io.read_file(mask_file_path)
-    mask = tf.io.decode_jpeg(mask, channels=1)
+    mask = tf.io.decode_jpeg(mask, channels=3)
     mask = tf.image.resize(mask, [128,128])
     
     image, mask = image_normalize(image, mask)
